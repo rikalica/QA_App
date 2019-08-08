@@ -1,103 +1,89 @@
 package jp.techacademy.rika.hataji.qa_app
 
-import android.content.Intent
-import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
-import android.support.v7.app.AppCompatActivity
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.ListView
+import android.view.ViewGroup
+import android.widget.BaseAdapter
+import android.widget.ImageView
+import android.widget.TextView
 
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import kotlinx.android.synthetic.main.activity_question_detail.*
+class QuestionDetailListAdapter(context: Context, private val mQustion: Question) : BaseAdapter() {
+    companion object {
+        private val TYPE_QUESTION = 0
+        private val TYPE_ANSWER = 1
+    }
 
-import java.util.HashMap
+    private var mLayoutInflater: LayoutInflater? = null
 
-class QuestionDetailActivity : AppCompatActivity() {
+    init {
+        mLayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+    }
 
-    private lateinit var mQuestion: Question
-    private lateinit var mAdapter: QuestionDetailListAdapter
-    private lateinit var mAnswerRef: DatabaseReference
+    override fun getCount(): Int {
+        return 1 + mQustion.answers.size
+    }
 
-    private val mEventListener = object : ChildEventListener {
-        override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
-            val map = dataSnapshot.value as Map<String, String>
-
-            val answerUid = dataSnapshot.key ?: ""
-
-            for (answer in mQuestion.answers) {
-                // 同じAnswerUidのものが存在しているときは何もしない
-                if (answerUid == answer.answerUid) {
-                    return
-                }
-            }
-
-            val body = map["body"] ?: ""
-            val name = map["name"] ?: ""
-            val uid = map["uid"] ?: ""
-
-            val answer = Answer(body, name, uid, answerUid)
-            mQuestion.answers.add(answer)
-            mAdapter.notifyDataSetChanged()
-        }
-
-        override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
-
-        }
-
-        override fun onChildRemoved(dataSnapshot: DataSnapshot) {
-
-        }
-
-        override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {
-
-        }
-
-        override fun onCancelled(databaseError: DatabaseError) {
-
+    override fun getItemViewType(position: Int): Int {
+        return if (position == 0) {
+            TYPE_QUESTION
+        } else {
+            TYPE_ANSWER
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_question_detail)
+    override fun getViewTypeCount(): Int {
+        return 2
+    }
 
-        // 渡ってきたQuestionのオブジェクトを保持する
-        val extras = intent.extras
-        mQuestion = extras.get("question") as Question
+    override fun getItem(position: Int): Any {
+        return mQustion
+    }
 
-        title = mQuestion.title
+    override fun getItemId(position: Int): Long {
+        return 0
+    }
 
-        // ListViewの準備
-        mAdapter = QuestionDetailListAdapter(this, mQuestion)
-        listView.adapter = mAdapter
-        mAdapter.notifyDataSetChanged()
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        var convertView = convertView
 
-        fab.setOnClickListener {
-            // ログイン済みのユーザーを取得する
-            val user = FirebaseAuth.getInstance().currentUser
-
-            if (user == null) {
-                // ログインしていなければログイン画面に遷移させる
-                val intent = Intent(applicationContext, LoginActivity::class.java)
-                startActivity(intent)
-            } else {
-                // Questionを渡して回答作成画面を起動する
-                // --- ここから ---
-                val intent = Intent(applicationContext, AnswerSendActivity::class.java)
-                intent.putExtra("question", mQuestion)
-                startActivity(intent)
-                // --- ここまで ---
+        if (getItemViewType(position) == TYPE_QUESTION) {
+            if (convertView == null) {
+                convertView = mLayoutInflater!!.inflate(R.layout.list_question_detail, parent, false)!!
             }
+            val body = mQustion.body
+            val name = mQustion.name
+
+            val bodyTextView = convertView.findViewById<View>(R.id.bodyTextView) as TextView
+            bodyTextView.text = body
+
+            val nameTextView = convertView.findViewById<View>(R.id.nameTextView) as TextView
+            nameTextView.text = name
+
+            val bytes = mQustion.imageBytes
+            if (bytes.isNotEmpty()) {
+                val image = BitmapFactory.decodeByteArray(bytes, 0, bytes.size).copy(Bitmap.Config.ARGB_8888, true)
+                val imageView = convertView.findViewById<View>(R.id.imageView) as ImageView
+                imageView.setImageBitmap(image)
+            }
+        } else {
+            if (convertView == null) {
+                convertView = mLayoutInflater!!.inflate(R.layout.list_answer, parent, false)!!
+            }
+
+            val answer = mQustion.answers[position - 1]
+            val body = answer.body
+            val name = answer.name
+
+            val bodyTextView = convertView.findViewById<View>(R.id.bodyTextView) as TextView
+            bodyTextView.text = body
+
+            val nameTextView = convertView.findViewById<View>(R.id.nameTextView) as TextView
+            nameTextView.text = name
         }
 
-        val dataBaseReference = FirebaseDatabase.getInstance().reference
-        mAnswerRef = dataBaseReference.child(ContentsPATH).child(mQuestion.genre.toString()).child(mQuestion.questionUid).child(AnswersPATH)
-        mAnswerRef.addChildEventListener(mEventListener)
+        return convertView
     }
 }
