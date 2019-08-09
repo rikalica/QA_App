@@ -97,5 +97,20 @@ class QuestionDetailActivity : AppCompatActivity() {
         val dataBaseReference = FirebaseDatabase.getInstance().reference
         mAnswerRef = dataBaseReference.child(ContentsPATH).child(mQuestion.genre.toString()).child(mQuestion.questionUid).child(AnswersPATH)
         mAnswerRef.addChildEventListener(mEventListener)
+
+        firebase.auth().onAuthStateChanged((user) => {
+            if (!user) {
+                // サインインしていない状態
+                // サインイン画面に遷移する等
+                // 例:
+                location.href = '/signin.html';
+            } else {
+                // サインイン済み
+            }
+        })
+
+        favorite_button.setOnClickListener {
+
+        }
     }
 }
