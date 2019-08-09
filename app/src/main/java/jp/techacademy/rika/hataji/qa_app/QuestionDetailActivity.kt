@@ -98,18 +98,32 @@ class QuestionDetailActivity : AppCompatActivity() {
         mAnswerRef = dataBaseReference.child(ContentsPATH).child(mQuestion.genre.toString()).child(mQuestion.questionUid).child(AnswersPATH)
         mAnswerRef.addChildEventListener(mEventListener)
 
-        firebase.auth().onAuthStateChanged((user) => {
-            if (!user) {
-                // サインインしていない状態
-                // サインイン画面に遷移する等
-                // 例:
-                location.href = '/signin.html';
-            } else {
-                // サインイン済み
-            }
-        })
+
+        val user = FirebaseAuth.getInstance().currentUser
+
+        if (user == null) {
+            favorite_button.setVisibility(View.GONE); // 表示
+            favorite_button.text = getString(R.string.favorite_register)
+        } else {
+            favorite_button.setVisibility(View.VISIBLE) // 非表示（ボタンがあったところのスペースは詰める）
+            favorite_button.text = getString(R.string.favorite_registered)
+        }
+
+        var userRef = mAnswerRef.child(FavoritesPATH).child(user!!.uid)
+        if(userRef.getKey(mQuestion.questionUid))
 
         favorite_button.setOnClickListener {
+            val databaseReference = FirebaseDatabase.getInstance().reference
+            val answerRef = dataBaseReference.child(ContentsPATH).child(mQuestion.genre.toString()).child(mQuestion.questionUid).child(
+                AnswersPATH)
+
+            val data = HashMap<String, String>()
+
+            //UID
+            data["uid"] = FirebaseAuth.getInstance().currentUser!!.uid
+
+            //表示名
+            //Preferenceから名前を取る
 
         }
     }
