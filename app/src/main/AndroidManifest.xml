@@ -12,6 +12,8 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
+        <activity android:name=".FavoritesListActivity">
+        </activity>
         <activity android:name=".AnswerSendActivity">
         </activity>
         <activity
@@ -28,7 +30,7 @@
         <activity android:name=".SettingActivity"/>
         <activity android:name=".QuestionSendActivity"/>
         <activity android:name=".QuestionDetailActivity"/>
-        <activity android:name=".AnswerSendActivity"></activity>
+        <activity android:name=".AnswerSendActivity"/>
     </application>
 
 </manifest>

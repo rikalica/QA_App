@@ -11,6 +11,13 @@
                 android:background="@color/colorPrimaryDark">
 
     <TextView
+            android:id="@+id/favorite_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="お気に入り一覧"
+            android:textColor="@color/colorButtonText"/>
+
+    <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="ジャンル選択"

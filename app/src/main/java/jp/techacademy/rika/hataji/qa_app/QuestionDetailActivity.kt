@@ -23,6 +23,7 @@ class QuestionDetailActivity : AppCompatActivity() {
     private lateinit var mQuestion: Question
     private lateinit var mAdapter: QuestionDetailListAdapter
     private lateinit var mAnswerRef: DatabaseReference
+    private lateinit var mFavoritesRef: DatabaseReference
 
     private val mEventListener = object : ChildEventListener {
         override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
@@ -102,17 +103,20 @@ class QuestionDetailActivity : AppCompatActivity() {
         val user = FirebaseAuth.getInstance().currentUser
 
         if (user == null) {
-            favorite_button.setVisibility(View.GONE); // 表示
+            favorite_button.setVisibility(View.GONE) // 表示
             favorite_button.text = getString(R.string.favorite_register)
         } else {
             favorite_button.setVisibility(View.VISIBLE) // 非表示（ボタンがあったところのスペースは詰める）
             favorite_button.text = getString(R.string.favorite_registered)
         }
 
-        var userRef = mAnswerRef.child(FavoritesPATH).child(user!!.uid)
-        if(userRef.getKey(mQuestion.questionUid))
+
 
         favorite_button.setOnClickListener {
+            mFavoritesRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid)
+            var favoriteRef = mFavoritesRef.child(FavoritesPATH).child(user!!.uid).child(mQuestion.questionUid)
+            favoriteRef.addListenerForSingleValueEvent(mQuestion.questionUid)
+
             val databaseReference = FirebaseDatabase.getInstance().reference
             val answerRef = dataBaseReference.child(ContentsPATH).child(mQuestion.genre.toString()).child(mQuestion.questionUid).child(
                 AnswersPATH)
@@ -127,4 +131,6 @@ class QuestionDetailActivity : AppCompatActivity() {
 
         }
     }
+
+    private
 }
