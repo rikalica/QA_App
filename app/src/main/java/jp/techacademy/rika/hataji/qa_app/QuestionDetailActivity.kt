@@ -3,6 +3,7 @@ package jp.techacademy.rika.hataji.qa_app
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.ListView
@@ -14,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_question_detail.*
 
 import java.util.HashMap
 
-class QuestionDetailActivity : AppCompatActivity() {
+class QuestionDetailActivity : AppCompatActivity(){
 
     private lateinit var mQuestion: Question
     private lateinit var mAdapter: QuestionDetailListAdapter
@@ -116,43 +117,43 @@ class QuestionDetailActivity : AppCompatActivity() {
 
                     //firebaseに登録されているかチェック
                     if(data == null){
-                        //未登録
-                        favorite_button.text = getString(R.string.favorite_register)
-                    } else {
-                        //登録済
+                        //登録する
                         favorite_button.text = getString(R.string.favorite_registered)
+
+
+                    } else {
+                        //登録解除
+                        favorite_button.text = getString(R.string.favorite_register)
                     }
                 }
-
-
-                //val databaseReference = FirebaseDatabase.getInstance().reference
-                val favoritesRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid).child(mQuestion.questionUid)
-
-                //firebaseに保存
-                val data = mQuestion.questionUid
-                favoritesRef.push().setValue(data, this)
-
-
-
-
-
-
                 override fun onCancelled(firebaseError: DatabaseError) {}
-
-
-
-
             })
+
+            //お気に入りボタンリスナー
+            favorite_button.setOnClickListener {
+                if(favorite_button.text == "@string/favorite_register") {
+                    //登録する
+                    //val databaseReference = FirebaseDatabase.getInstance().reference
+                    val favoritesRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid).child(mQuestion.questionUid)
+
+                    //firebaseに保存
+                    val user_id = mQuestion.questionUid
+                    favoritesRef.push().setValue(user_id)
+                } else {
+                    //val databaseReference = FirebaseDatabase.getInstance().reference
+                    val favoritesRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid).child(mQuestion.questionUid)
+
+                    //firebaseに保存
+                    val user_id = mQuestion.questionUid
+                    favoritesRef.push().setValue(user_id)
+                }
+            }
+
+
         }
 
-
-
-        favorite_button.setOnClickListener {
-
-
-
-
-        }
     }
+
+
 
 }
