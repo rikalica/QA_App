@@ -9,11 +9,7 @@ import android.widget.ListView
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_question_detail.*
 
 import java.util.HashMap
@@ -103,34 +99,60 @@ class QuestionDetailActivity : AppCompatActivity() {
         val user = FirebaseAuth.getInstance().currentUser
 
         if (user == null) {
-            favorite_button.setVisibility(View.GONE) // 表示
-            favorite_button.text = getString(R.string.favorite_register)
+            favorite_button.setVisibility(View.GONE) // 非表示（ボタンがあったところのスペースは詰める）
+
+
+
         } else {
-            favorite_button.setVisibility(View.VISIBLE) // 非表示（ボタンがあったところのスペースは詰める）
-            favorite_button.text = getString(R.string.favorite_registered)
+            favorite_button.setVisibility(View.VISIBLE) // 表示
+
+            ///データ読み取り
+            mFavoritesRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid)
+            var favoriteRef = mFavoritesRef.child(FavoritesPATH).child(user!!.uid).child(mQuestion.questionUid)
+            favoriteRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    //Snapshot(DBにデータがあるかどうか代入するオブジェクト)
+                    val data = snapshot.value as Map<*, *>?
+
+                    //firebaseに登録されているかチェック
+                    if(data == null){
+                        //未登録
+                        favorite_button.text = getString(R.string.favorite_register)
+                    } else {
+                        //登録済
+                        favorite_button.text = getString(R.string.favorite_registered)
+                    }
+                }
+
+
+                //val databaseReference = FirebaseDatabase.getInstance().reference
+                val favoritesRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid).child(mQuestion.questionUid)
+
+                //firebaseに保存
+                val data = mQuestion.questionUid
+                favoritesRef.push().setValue(data, this)
+
+
+
+
+
+
+                override fun onCancelled(firebaseError: DatabaseError) {}
+
+
+
+
+            })
         }
 
 
 
         favorite_button.setOnClickListener {
-            mFavoritesRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid)
-            var favoriteRef = mFavoritesRef.child(FavoritesPATH).child(user!!.uid).child(mQuestion.questionUid)
-            favoriteRef.addListenerForSingleValueEvent(mQuestion.questionUid)
 
-            val databaseReference = FirebaseDatabase.getInstance().reference
-            val answerRef = dataBaseReference.child(ContentsPATH).child(mQuestion.genre.toString()).child(mQuestion.questionUid).child(
-                AnswersPATH)
 
-            val data = HashMap<String, String>()
 
-            //UID
-            data["uid"] = FirebaseAuth.getInstance().currentUser!!.uid
-
-            //表示名
-            //Preferenceから名前を取る
 
         }
     }
 
-    private
 }
