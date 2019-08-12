@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_question_detail.*
 
 import java.util.HashMap
 
-class QuestionDetailActivity : AppCompatActivity(){
+class QuestionDetailActivity : AppCompatActivity(), DatabaseReference.CompletionListener{
 
     private lateinit var mQuestion: Question
     private lateinit var mAdapter: QuestionDetailListAdapter
@@ -143,9 +143,9 @@ class QuestionDetailActivity : AppCompatActivity(){
                     //val databaseReference = FirebaseDatabase.getInstance().reference
                     val favoritesRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid).child(mQuestion.questionUid)
 
-                    //firebaseに保存
+                    //firebaseにから削除
                     val user_id = mQuestion.questionUid
-                    favoritesRef.push().setValue(user_id)
+                    favoritesRef.removeValue()
                 }
             }
 
@@ -153,6 +153,8 @@ class QuestionDetailActivity : AppCompatActivity(){
         }
 
     }
+
+    override fun onComplete(databaseError: DatabaseError?, databaseReference: DatabaseReference) {}
 
 
 

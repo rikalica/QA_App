@@ -20,6 +20,8 @@
             android:id="@+id/favorite_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
             android:text="@string/favorite_register"/>
 
     <android.support.design.widget.FloatingActionButton
