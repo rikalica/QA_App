@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_question_detail.*
 
 import java.util.HashMap
 
-class QuestionDetailActivity : AppCompatActivity(), DatabaseReference.CompletionListener{
+class QuestionDetailActivity : AppCompatActivity(){
 
     private lateinit var mQuestion: Question
     private lateinit var mAdapter: QuestionDetailListAdapter
@@ -117,13 +117,13 @@ class QuestionDetailActivity : AppCompatActivity(), DatabaseReference.Completion
 
                     //firebaseに登録されているかチェック
                     if(data == null){
-                        //登録する
-                        favorite_button.text = getString(R.string.favorite_registered)
+                        //未登録
+                        favorite_button.text = getString(R.string.favorite_register)
 
 
                     } else {
-                        //登録解除
-                        favorite_button.text = getString(R.string.favorite_register)
+                        //登録済
+                        favorite_button.text = getString(R.string.favorite_registered)
                     }
                 }
                 override fun onCancelled(firebaseError: DatabaseError) {}
@@ -131,20 +131,23 @@ class QuestionDetailActivity : AppCompatActivity(), DatabaseReference.Completion
 
             //お気に入りボタンリスナー
             favorite_button.setOnClickListener {
-                if(favorite_button.text == "@string/favorite_register") {
+                if(favorite_button.text == getString(R.string.favorite_register)) {
                     //登録する
+                    favorite_button.text = getString(R.string.favorite_registered)
+
                     //val databaseReference = FirebaseDatabase.getInstance().reference
                     val favoritesRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid).child(mQuestion.questionUid)
 
                     //firebaseに保存
-                    val user_id = mQuestion.questionUid
-                    favoritesRef.push().setValue(user_id)
+                    favoritesRef.push().setValue(mQuestion.questionUid)
                 } else {
+                    //登録解除
+                    favorite_button.text = getString(R.string.favorite_register)
+
                     //val databaseReference = FirebaseDatabase.getInstance().reference
                     val favoritesRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid).child(mQuestion.questionUid)
 
                     //firebaseにから削除
-                    val user_id = mQuestion.questionUid
                     favoritesRef.removeValue()
                 }
             }
@@ -153,9 +156,5 @@ class QuestionDetailActivity : AppCompatActivity(), DatabaseReference.Completion
         }
 
     }
-
-    override fun onComplete(databaseError: DatabaseError?, databaseReference: DatabaseReference) {}
-
-
 
 }
