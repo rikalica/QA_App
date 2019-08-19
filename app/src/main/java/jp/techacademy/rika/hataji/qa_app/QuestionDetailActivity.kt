@@ -136,7 +136,7 @@ class QuestionDetailActivity : AppCompatActivity(){
                     favorite_button.text = getString(R.string.favorite_registered)
 
                     //val databaseReference = FirebaseDatabase.getInstance().reference
-                    val favoritesRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid).child(mQuestion.questionUid)
+                    val favoritesRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid).child(mQuestion.genre.toString()).child(mQuestion.questionUid)
 
                     //firebaseに保存
                     favoritesRef.push().setValue(mQuestion.questionUid)
@@ -145,7 +145,7 @@ class QuestionDetailActivity : AppCompatActivity(){
                     favorite_button.text = getString(R.string.favorite_register)
 
                     //val databaseReference = FirebaseDatabase.getInstance().reference
-                    val favoritesRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid).child(mQuestion.questionUid)
+                    val favoritesRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid).child(mQuestion.genre.toString()).child(mQuestion.questionUid)
 
                     //firebaseにから削除
                     favoritesRef.removeValue()

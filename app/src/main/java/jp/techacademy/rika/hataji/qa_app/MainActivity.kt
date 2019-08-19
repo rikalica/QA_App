@@ -223,7 +223,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (mGenreRef != null) {
             mGenreRef!!.removeEventListener(mEventListener)
         }
-        mGenreRef = mDatabaseReference.child(ContentsPATH).child(mGenre.toString())
+
+        val user = FirebaseAuth.getInstance().currentUser
+
+        if (mGenre == 5) {
+            mGenreRef = mDatabaseReference.child(FavoritesPATH).child(user!!.uid)
+
+        } else {
+            mGenreRef = mDatabaseReference.child(ContentsPATH).child(mGenre.toString())
+        }
+
         mGenreRef!!.addChildEventListener(mEventListener)
 
         return true
