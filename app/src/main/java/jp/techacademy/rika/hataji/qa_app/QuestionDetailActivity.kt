@@ -119,8 +119,6 @@ class QuestionDetailActivity : AppCompatActivity(){
                     if(data == null){
                         //未登録
                         favorite_button.text = getString(R.string.favorite_register)
-
-
                     } else {
                         //登録済
                         favorite_button.text = getString(R.string.favorite_registered)
@@ -139,7 +137,10 @@ class QuestionDetailActivity : AppCompatActivity(){
                     val favoritesRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid).child(mQuestion.questionUid)
 
                     //firebaseに保存
-                    favoritesRef.push().setValue(mQuestion.questionUid)
+                    val data = HashMap<String, String>()
+                    data["qid"] = mQuestion.questionUid
+                    data["genre"] = mQuestion.genre.toString()
+                    favoritesRef.push().setValue(data)
                 } else {
                     //登録解除
                     favorite_button.text = getString(R.string.favorite_register)
