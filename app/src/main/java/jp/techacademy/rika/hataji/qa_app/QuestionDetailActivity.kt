@@ -140,7 +140,7 @@ class QuestionDetailActivity : AppCompatActivity(){
                     val data = HashMap<String, String>()
                     data["qid"] = mQuestion.questionUid
                     data["genre"] = mQuestion.genre.toString()
-                    favoritesRef.push().setValue(data)
+                    favoritesRef.setValue(data)
                 } else {
                     //登録解除
                     favorite_button.text = getString(R.string.favorite_register)

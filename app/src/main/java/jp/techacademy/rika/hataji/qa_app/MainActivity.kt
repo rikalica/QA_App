@@ -115,9 +115,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
 
             val favoritesMap = dataSnapshot.getValue() as Map<String, String>
-            val favoriteInfoMap = favoritesMap[dataSnapshot.key] as Map<String, String>?
-            val favoritesQid = favoriteInfoMap?.get("qid") ?: ""
-            val genre = favoriteInfoMap?.get("genre") ?: ""
+            //val favoriteInfoMap = favoritesMap?.get(dataSnapshot.key) as Map<String, String>?
+            val favoritesQid = favoritesMap?.get("qid") ?: ""
+            val genre = favoritesMap?.get("genre") ?: ""
 
             //val favorites = Favorites(favoritesQid, genre)
             //mFavoriteArrayList.add(favorites)
