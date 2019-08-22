@@ -114,41 +114,41 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val mFavoritesListener = object : ChildEventListener {
         override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
 
-            val favoritesMap = dataSnapshot.value as Map<String, String>
-            val favoritesQid = favoritesMap["qid"] ?: ""
-            val genre = favoritesMap["genre"] ?: ""
+            val favoritesMap = dataSnapshot.getValue() as Map<String, String>
+            val favoriteInfoMap = favoritesMap[dataSnapshot.key] as Map<String, String>
+            val favoritesQid = favoriteInfoMap["qid"] ?: ""
+            val genre = favoriteInfoMap["genre"] ?: ""
 
-            val favorites = Favorites(favoritesQid, genre)
-            mFavoriteArrayList.add(favorites)
-            mAdapter.notifyDataSetChanged()
+            //val favorites = Favorites(favoritesQid, genre)
+            //mFavoriteArrayList.add(favorites)
+            //mAdapter.notifyDataSetChanged()
 
             mGenreRef = mDatabaseReference.child(ContentsPATH).child(genre).child(favoritesQid)
             mGenreRef!!.addChildEventListener(mEventListener)
         }
 
         override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
-            val map = dataSnapshot.value as Map<String, String>
+            //val map = dataSnapshot.value as Map<String, String>
 
             // 変更があったQuestionを探す
-            for (favorite in mFavoriteArrayList) {
-                if (dataSnapshot.key.equals(favorite.favoritesQid)) {
-                    // このアプリで変更がある可能性があるのは回答(Answer)のみ
-                    favorite.clear()
-                    val answerMap = map["answers"] as Map<String, String>?
-                    if (answerMap != null) {
-                        for (key in answerMap.keys) {
-                            val temp = answerMap[key] as Map<String, String>
-                            val answerBody = temp["body"] ?: ""
-                            val answerName = temp["name"] ?: ""
-                            val answerUid = temp["uid"] ?: ""
-                            val answer = Answer(answerBody, answerName, answerUid, key)
-                            favorite.add(answer)
-                        }
-                    }
+            //for (favorite in mFavoriteArrayList) {
+            //    if (dataSnapshot.key.equals(favorite.favoritesQid)) {
+            //        // このアプリで変更がある可能性があるのは回答(Answer)のみ
+            //        val answerMap = map["answers"] as Map<String, String>?
+            //        if (answerMap != null) {
+            //            for (key in answerMap.keys) {
+            //                val temp = answerMap[key] as Map<String, String>
+            //                val answerBody = temp["body"] ?: ""
+            //                val answerName = temp["name"] ?: ""
+            //                val answerUid = temp["uid"] ?: ""
+            //                val answer = Answer(answerBody, answerName, answerUid, key)
 
-                    mAdapter.notifyDataSetChanged()
-                }
-            }
+            //            }
+            //        }
+
+            //        mAdapter.notifyDataSetChanged()
+            //    }
+            //}
         }
 
         override fun onChildRemoved(p0: DataSnapshot) {
