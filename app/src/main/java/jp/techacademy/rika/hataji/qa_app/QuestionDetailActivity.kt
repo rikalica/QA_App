@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.ListView
 
@@ -109,7 +110,8 @@ class QuestionDetailActivity : AppCompatActivity(){
 
             ///データ読み取り
             mFavoritesRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid)
-            var favoriteRef = mFavoritesRef.child(FavoritesPATH).child(user!!.uid).child(mQuestion.questionUid)
+            var favoriteRef = mFavoritesRef.child(FavoritesPATH).child(user!!.uid).child(mQuestion!!.questionUid)
+            Log.d("ANDROID", user!!.uid)
             favoriteRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     //Snapshot(DBにデータがあるかどうか代入するオブジェクト)
@@ -132,8 +134,6 @@ class QuestionDetailActivity : AppCompatActivity(){
                 if(favorite_button.text == getString(R.string.favorite_register)) {
                     //登録する
                     favorite_button.text = getString(R.string.favorite_registered)
-
-                    //val databaseReference = FirebaseDatabase.getInstance().reference
                     val favoritesRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid).child(mQuestion.questionUid)
 
                     //firebaseに保存
@@ -144,8 +144,6 @@ class QuestionDetailActivity : AppCompatActivity(){
                 } else {
                     //登録解除
                     favorite_button.text = getString(R.string.favorite_register)
-
-                    //val databaseReference = FirebaseDatabase.getInstance().reference
                     val favoritesRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid).child(mQuestion.questionUid)
 
                     //firebaseにから削除

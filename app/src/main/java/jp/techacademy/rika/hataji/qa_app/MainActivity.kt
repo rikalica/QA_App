@@ -112,28 +112,50 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
 
             val favoritesMap = dataSnapshot.getValue() as Map<String, String>
-            //val favoriteInfoMap = favoritesMap?.get(dataSnapshot.key) as Map<String, String>?
             val favoritesQid = favoritesMap?.get("qid") ?: ""
             val genre = favoritesMap?.get("genre") ?: ""
-
-            //val favorites = Favorites(favoritesQid, genre)
-            //mFavoriteArrayList.add(favorites)
-            //mAdapter.notifyDataSetChanged()
-
-
 
 
             mGenreRef = mDatabaseReference.child(ContentsPATH).child(genre).child(favoritesQid)
 
             mGenreRef!!.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot?){
+                override fun onDataChange(snapshot: DataSnapshot){
+                    val map = snapshot.value as Map<String, String>
+                    val title = map["title"] ?: ""
+                    val body = map["body"] ?: ""
+                    val name = map["name"] ?: ""
+                    val uid = map["uid"] ?: ""
+                    val imageString = map["image"] ?: ""
+                    val bytes =
+                        if (imageString.isNotEmpty()) {
+                            Base64.decode(imageString, Base64.DEFAULT)
+                        } else {
+                            byteArrayOf()
+                        }
 
+                    val answerArrayList = ArrayList<Answer>()
+                    val answerMap = map["answers"] as Map<String, String>?
+                    if (answerMap != null) {
+                        for (key in answerMap.keys) {
+                            val temp = answerMap[key] as Map<String, String>
+                            val answerBody = temp["body"] ?: ""
+                            val answerName = temp["name"] ?: ""
+                            val answerUid = temp["uid"] ?: ""
+                            val answer = Answer(answerBody, answerName, answerUid, key)
+                            answerArrayList.add(answer)
+                        }
+                    }
+
+                    val question = Question(title, body, name, uid, snapshot.key ?: "",
+                        mGenre, bytes, answerArrayList)
+                    mQuestionArrayList.add(question)
+                    mAdapter.notifyDataSetChanged()
                 }
 
-                override fun onCancelled(error: FirebaseError?){
+                override fun onCancelled(firebaseError: DatabaseError){
 
                 }
-            });
+            })
         }
 
         override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
@@ -292,14 +314,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val user = FirebaseAuth.getInstance().currentUser
 
         if (mGenre == 5) {
-
-            mGenreRef = mDatabaseReference.child(ContentsPATH).child(mGenre.toString())
-
-
             mFavoriteRef = mDatabaseReference.child(FavoritesPATH).child(user!!.uid)
             mFavoriteRef!!.addChildEventListener(mFavoritesListener)
-
-
         } else {
             mGenreRef = mDatabaseReference.child(ContentsPATH).child(mGenre.toString())
             mGenreRef!!.addChildEventListener(mEventListener)
