@@ -62,6 +62,39 @@ class QuestionDetailActivity : AppCompatActivity(){
         }
     }
 
+    private val mFavoriteListener = object : ChildEventListener {
+
+        override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
+            //Snapshot(DBにデータがあるかどうか代入するオブジェクト)
+            val data = dataSnapshot.value as Map<*, *>?
+
+            //firebaseに登録されているかチェック
+            if(data == null){
+                //未登録
+                favorite_button.text = getString(R.string.favorite_register)
+            } else {
+                //登録済
+                favorite_button.text = getString(R.string.favorite_registered)
+            }
+        }
+
+        override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
+
+        }
+
+        override fun onChildRemoved(dataSnapshot: DataSnapshot) {
+
+        }
+
+        override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {
+
+        }
+
+        override fun onCancelled(databaseError: DatabaseError) {
+
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_question_detail)
@@ -111,23 +144,9 @@ class QuestionDetailActivity : AppCompatActivity(){
             ///データ読み取り
             mFavoritesRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid)
             var favoriteRef = mFavoritesRef.child(FavoritesPATH).child(user!!.uid).child(mQuestion!!.questionUid)
-            Log.d("ANDROID", user!!.uid)
-            favoriteRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    //Snapshot(DBにデータがあるかどうか代入するオブジェクト)
-                    val data = snapshot.value as Map<*, *>?
-
-                    //firebaseに登録されているかチェック
-                    if(data == null){
-                        //未登録
-                        favorite_button.text = getString(R.string.favorite_register)
-                    } else {
-                        //登録済
-                        favorite_button.text = getString(R.string.favorite_registered)
-                    }
-                }
-                override fun onCancelled(firebaseError: DatabaseError) {}
-            })
+            Log.d("user!!.uid", user!!.uid)
+            Log.d("mQuestion!!.questionUid", mQuestion!!.questionUid)
+            favoriteRef.addChildEventListener(mFavoriteListener)
 
             //お気に入りボタンリスナー
             favorite_button.setOnClickListener {
