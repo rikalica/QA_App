@@ -146,7 +146,24 @@ class QuestionDetailActivity : AppCompatActivity(){
             var favoriteRef = mFavoritesRef.child(FavoritesPATH).child(user!!.uid).child(mQuestion!!.questionUid)
             Log.d("user!!.uid", user!!.uid)
             Log.d("mQuestion!!.questionUid", mQuestion!!.questionUid)
-            favoriteRef.addChildEventListener(mFavoriteListener)
+            Log.d("ANDROID", user!!.uid)
+            //favoriteRef.addChildEventListener(mFavoriteListener)
+            favoriteRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    //Snapshot(DBにデータがあるかどうか代入するオブジェクト)
+                    val data = snapshot.value as Map<*, *>?
+
+                    //firebaseに登録されているかチェック
+                    if(data == null){
+                        //未登録
+                        favorite_button.text = getString(R.string.favorite_register)
+                    } else {
+                        //登録済
+                        favorite_button.text = getString(R.string.favorite_registered)
+                    }
+                }
+                override fun onCancelled(firebaseError: DatabaseError) {}
+            })
 
             //お気に入りボタンリスナー
             favorite_button.setOnClickListener {
