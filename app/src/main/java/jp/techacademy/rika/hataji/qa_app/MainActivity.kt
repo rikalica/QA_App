@@ -20,6 +20,7 @@ import android.widget.ListView
 import com.google.firebase.FirebaseError
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.app_bar_main.*
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -148,6 +149,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         }
                     }
 
+                    //genre.toInt()
                     val question = Question(title, body, name, uid, snapshot.key ?: "",
                         genre.toInt(), bytes, answerArrayList)
                     mQuestionArrayList.add(question)
@@ -316,7 +318,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val user = FirebaseAuth.getInstance().currentUser
 
         if (mGenre == 5) {
-            nav_view.visibility = View.GONE
+            //fab.visibility = View.GONE
             mFavoriteRef = mDatabaseReference.child(FavoritesPATH).child(user!!.uid)
             mFavoriteRef!!.addChildEventListener(mFavoritesListener)
         } else {
