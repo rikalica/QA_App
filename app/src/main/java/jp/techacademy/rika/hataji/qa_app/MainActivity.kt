@@ -147,7 +147,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     }
 
                     val question = Question(title, body, name, uid, snapshot.key ?: "",
-                        mGenre, bytes, answerArrayList)
+                        genre.toString(), bytes, answerArrayList)
                     mQuestionArrayList.add(question)
                     mAdapter.notifyDataSetChanged()
                 }

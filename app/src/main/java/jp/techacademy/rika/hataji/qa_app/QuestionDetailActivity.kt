@@ -142,11 +142,10 @@ class QuestionDetailActivity : AppCompatActivity(){
             favorite_button.setVisibility(View.VISIBLE) // 表示
 
             ///データ読み取り
-            mFavoritesRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid)
-            var favoriteRef = mFavoritesRef.child(FavoritesPATH).child(user!!.uid).child(mQuestion!!.questionUid)
+            var favoriteRef = dataBaseReference.child(FavoritesPATH).child(user!!.uid).child(mQuestion!!.questionUid)
             Log.d("user!!.uid", user!!.uid)
             Log.d("mQuestion!!.questionUid", mQuestion!!.questionUid)
-            Log.d("ANDROID", user!!.uid)
+
             //favoriteRef.addChildEventListener(mFavoriteListener)
             favoriteRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
