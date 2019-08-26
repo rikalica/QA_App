@@ -15,9 +15,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import android.support.design.widget.Snackbar
 import android.util.Base64  //追加する
+import android.view.View
 import android.widget.ListView
 import com.google.firebase.FirebaseError
 import com.google.firebase.database.*
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -147,7 +149,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     }
 
                     val question = Question(title, body, name, uid, snapshot.key ?: "",
-                        genre.toString(), bytes, answerArrayList)
+                        genre.toInt(), bytes, answerArrayList)
                     mQuestionArrayList.add(question)
                     mAdapter.notifyDataSetChanged()
                 }
@@ -314,6 +316,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val user = FirebaseAuth.getInstance().currentUser
 
         if (mGenre == 5) {
+            nav_view.visibility = View.GONE
             mFavoriteRef = mDatabaseReference.child(FavoritesPATH).child(user!!.uid)
             mFavoriteRef!!.addChildEventListener(mFavoritesListener)
         } else {
